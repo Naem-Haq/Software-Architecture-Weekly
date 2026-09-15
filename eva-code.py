@@ -1,4 +1,5 @@
 import json
+import csv
 from datetime import datetime
 import matplotlib.pyplot as plt
 
@@ -15,7 +16,18 @@ print("Available countries:")
 for country in countries:
     print("-", country)
 
-selected_country = input("Enter a country: ").strip()
+country_input = input("Enter a country: ").strip()
+
+selected_country = None
+
+for country in countries:
+    if country.lower() == country_input.lower():
+        selected_country = country
+        break
+
+if selected_country is None:
+    print("Country not found.")
+    exit()
 
 records = []
 country_total_hours = 0
@@ -54,10 +66,28 @@ for date, duration_hours in records:
     dates.append(date)
     cumulative_hours.append(total_hours)
 
-print(
-    f"Total EVA duration for {selected_country}: "
-    f"{country_total_hours:.2f} hours"
-)
+print("\nCountry EVA Statistics:")
+print(f"{selected_country}: {country_total_hours:.2f} hours")
+
+with open(
+    "country_statistics.csv",
+    "w",
+    newline="",
+    encoding="utf-8"
+) as file:
+    writer = csv.writer(file)
+
+    writer.writerow([
+        "Country",
+        "Total EVA Duration (hours)"
+    ])
+
+    writer.writerow([
+        selected_country,
+        f"{country_total_hours:.2f}"
+    ])
+
+print("\nCountry statistics saved to country_statistics.csv")
 
 plt.plot(dates, cumulative_hours)
 plt.xlabel("Year")
