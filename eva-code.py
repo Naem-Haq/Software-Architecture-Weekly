@@ -31,6 +31,11 @@ if selected_country is None:
 
 records = []
 country_total_hours = 0
+duration_categories = {
+    "Short": 0,
+    "Standard": 0,
+    "Long": 0,
+}
 
 for eva in eva_data:
     duration_text = eva.get("duration")
@@ -40,6 +45,13 @@ for eva in eva_data:
 
     hours, minutes = map(int, duration_text.split(":"))
     duration_hours = hours + minutes / 60
+
+    if duration_hours < 4:
+        duration_categories["Short"] += 1
+    elif duration_hours < 7:
+        duration_categories["Standard"] += 1
+    else:
+        duration_categories["Long"] += 1
 
     country = eva.get("country")
 
@@ -68,6 +80,13 @@ for date, duration_hours in records:
 
 print("\nCountry EVA Statistics:")
 print(f"{selected_country}: {country_total_hours:.2f} hours")
+
+total_classified_evas = sum(duration_categories.values())
+
+print("\nEVA Duration Categories:")
+for category, count in duration_categories.items():
+    percentage = count / total_classified_evas * 100 if total_classified_evas else 0
+    print(f"{category}: {count} ({percentage:.2f}%)")
 
 with open(
     "country_statistics.csv",
